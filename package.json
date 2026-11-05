@@ -1,0 +1,11 @@
+{
+  "name": "landing-prince-royal",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "dev": "node scripts/serve.mjs"
+  },
+  "packageManager": "pnpm@10.22.0"
+}

@@ -1,0 +1,68 @@
+import { access, readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const html = await readFile(path.join(root, "index.html"), "utf8");
+const fontCssPath = path.join(root, "assets/css/fonts.css");
+const fontCss = await readFile(fontCssPath, "utf8");
+const localReferences = [...html.matchAll(/(?:content|href|src)="([^"]+)"/g)]
+  .map((match) => match[1])
+  .filter((reference) => reference.startsWith("/"));
+
+const failures = [];
+
+for (const reference of localReferences) {
+  const relativePath = decodeURIComponent(reference.split(/[?#]/, 1)[0]).replace(/^\/+/, "");
+
+  try {
+    await access(path.join(root, relativePath));
+  } catch {
+    failures.push(`Missing local asset: ${reference}`);
+  }
+}
+
+for (const match of fontCss.matchAll(/url\(([^)]+)\)/g)) {
+  const reference = match[1].replaceAll(/["']/g, "");
+
+  try {
+    await access(path.resolve(path.dirname(fontCssPath), reference));
+  } catch {
+    failures.push(`Missing local font: ${reference}`);
+  }
+}
+
+if (!html.includes('lang="mn"')) {
+  failures.push("The document language is not Mongolian.");
+}
+
+if (!fontCss.includes("U+0400-045F") || !fontCss.includes("U+0460-052F")) {
+  failures.push("Mongolian Cyrillic font coverage is missing.");
+}
+
+for (const copy of ["Leader’s of Mongolia", "600,000₮", "500,000₮", "400,000₮", "Энэ жил таны он байг ээ…"]) {
+  if (!html.includes(copy)) failures.push(`Required invitation copy is missing: ${copy}`);
+}
+
+for (const eventCopy of ["2027-06-12", "Хөтөлбөр", "Restorant Ambient", "Ferizaj, Kosovë"]) {
+  if (!html.includes(eventCopy)) failures.push(`Preserved event content is missing: ${eventCopy}`);
+}
+
+for (const removedDemoCopy of ["+383"]) {
+  if (html.includes(removedDemoCopy)) failures.push(`Old demo content is still present: ${removedDemoCopy}`);
+}
+
+if (html.includes("cloudflareinsights.com")) {
+  failures.push("Third-party analytics beacon is still present.");
+}
+
+if (html.includes("﹖")) {
+  failures.push("A SiteSucker query-character filename is still referenced.");
+}
+
+if (failures.length > 0) {
+  console.error(failures.join("\n"));
+  process.exitCode = 1;
+} else {
+  console.log(`Static checks passed (${localReferences.length} local references).`);
+}
