@@ -2,7 +2,7 @@
 
 Backendгүй, нэг хуудастай Монгол digital invitation landing. Сонгосон `prince-royal` demo-ийн envelope animation, scroll reveal болон music interaction-ийг local static asset-аар ажиллуулна.
 
-Leader’s of Mongolia light logo болон кирилл дэмждэг Cormorant Garamond, Marck Script, Manrope font-уудыг repo дотроос self-host хийнэ.
+Leaders Mongolia light logo болон кирилл дэмждэг Cormorant Garamond, Marck Script, Manrope font-уудыг repo дотроос self-host хийнэ.
 
 ## Local preview
 

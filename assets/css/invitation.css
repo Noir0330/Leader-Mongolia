@@ -48,7 +48,7 @@ h1,h2,h3{font-weight:400;margin:0}
 .hero-copy{padding:0 24px}
 .hero-new-year{position:relative;z-index:2;max-width:100%;margin:-1.02em auto 1.01em;font-family:var(--f-script);font-size:clamp(2.9rem,13vw,5.4rem);font-weight:400;line-height:.74;color:var(--accent);text-shadow:0 3px 20px rgba(0,0,0,.7)}
 .hero-new-year span{display:block;margin:.18em 0 0;white-space:nowrap}
-.hero-brand-title span{font-size:clamp(2.35rem,10.5vw,4.6rem)}
+.hero-brand-logo{position:relative;z-index:2;display:block;width:min(100%,520px);height:auto;margin:-64px auto 8px;filter:drop-shadow(0 8px 22px rgba(0,0,0,.72))}
 .hero-message{margin:34px auto 30px;max-width:440px;padding:28px 18px;border-block:1px solid color-mix(in srgb,var(--accent) 38%,transparent)}
 .hero-message>p:first-child{margin:0;font-family:var(--f-display);font-size:clamp(1.2rem,4.8vw,1.45rem);font-style:italic;line-height:1.65}
 .hero-message .hosts{margin-top:22px}
@@ -587,9 +587,9 @@ body:has(.thanks-bar) .music-btn{bottom:92px}
 .mc-s{display:none}
 @media (prefers-reduced-motion:reduce){.mc-btn::after{animation:none;display:none}}
 
-/* Leader’s of Mongolia brand + Cyrillic typography */
-.brand-mark{position:relative;width:min(76vw,320px);height:136px;margin:0 auto 12px;overflow:hidden;pointer-events:none;background:#fff url("../images/leader-mongolia-logo-light.jpg") center/92% auto no-repeat;border:1px solid rgba(214,0,59,.72);border-radius:14px;box-shadow:0 0 0 1px rgba(212,176,102,.32),0 20px 48px -28px rgba(0,0,0,.9)}
-.brand-mark::after{content:"";position:absolute;inset:6px;border:1px solid rgba(212,176,102,.56);border-radius:9px}
+/* Leaders Mongolia brand + Cyrillic typography */
+.brand-mark{position:relative;width:min(76vw,320px);height:136px;margin:0 auto 12px;overflow:hidden;pointer-events:none;background:transparent url("../images/leaders-mongolia-2026-transparent.png") center/contain no-repeat}
+.brand-mark::after{content:none}
 .brand-mark img{opacity:0;width:100%;height:auto}
 .env-card span,.env-seal span,.arch-in .mono{font-family:var(--f-display);font-style:italic}
 .recipient-line{width:min(78vw,320px);height:40px;margin:10px auto 0;border-bottom:1px solid color-mix(in srgb,var(--accent) 76%,transparent);position:relative}
@@ -856,12 +856,18 @@ html[lang="mn"] .foot-names .n1{font-family:var(--f-display);font-size:.76em;let
   .mobile-menu-close{width:40px;height:40px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);border-radius:50%;background:color-mix(in srgb,var(--accent) 7%,transparent);color:var(--accent);cursor:pointer}
   .mobile-menu-close svg{width:20px;height:20px}
   .mobile-menu-links{display:grid;gap:4px;padding-top:10px}
-  .mobile-menu-links a{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;color:var(--ink);text-decoration:none;transition:background .2s,color .2s}
+  .mobile-menu-links a{display:grid;grid-template-columns:42px minmax(0,1fr) 18px;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;color:var(--ink);text-decoration:none;transition:background .2s,color .2s}
   .mobile-menu-links a[aria-current="page"],.mobile-menu-links a:hover{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent)}
   .mobile-menu-links svg{width:27px;height:27px;padding:4px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:9px}
   .mobile-menu-links span{font-family:var(--f-display);font-size:1.22rem}
   .mobile-menu-links small{display:block;margin-bottom:2px;color:var(--muted);font:500 .53rem/1 var(--f-body);letter-spacing:.18em}
-  .mobile-menu-links b{font-weight:400;color:var(--accent)}
+  .mobile-menu-links .mobile-menu-arrow{width:18px;height:18px;padding:0;border:0;border-radius:0;color:var(--accent)}
+  .mobile-menu-contact{margin:12px 6px 0;padding:14px 8px 16px;border-block:1px solid color-mix(in srgb,var(--accent) 28%,transparent);text-align:center}
+  .mobile-menu-contact>p{margin:0 0 9px;color:var(--muted);font:600 .55rem/1 var(--f-body);letter-spacing:.2em;text-transform:uppercase}
+  .mobile-menu-contact>div{display:flex;align-items:center;justify-content:center;gap:14px}
+  .mobile-menu-contact a{color:var(--ink);font:500 1.15rem/1 var(--f-display);text-decoration:none;font-variant-numeric:tabular-nums;transition:color .2s}
+  .mobile-menu-contact a:hover{color:var(--accent)}
+  .mobile-menu-contact i{width:4px;height:4px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px color-mix(in srgb,var(--accent) 70%,transparent)}
   .has-env:not(.opened) .mobile-nav{opacity:0;transform:translate(-50%,20px);pointer-events:none}
   .music-btn{right:14px;bottom:calc(102px + env(safe-area-inset-bottom));width:46px;height:46px}
   .inv-foot{padding-bottom:28px}

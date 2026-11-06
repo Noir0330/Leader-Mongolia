@@ -48,7 +48,7 @@ if (!fontCss.includes("U+0400-045F") || !fontCss.includes("U+0460-052F")) {
   failures.push("Mongolian Cyrillic font coverage is missing.");
 }
 
-for (const copy of ["Leader’s of Mongolia", "Эрхэмсэг үдэш таныг урьж байна", "Шинэ оноо хамтдаа угтъя!"]) {
+for (const copy of ["Leaders Mongolia", "Эрхэмсэг үдэш таныг урьж байна", "Шинэ оноо хамтдаа угтъя!"]) {
   if (!html.includes(copy)) failures.push(`Required invitation copy is missing: ${copy}`);
 }
 
@@ -60,7 +60,7 @@ for (const menuCopy of ["Таны үдшийн зоог", "Жимстэй шин
   if (!menuHtml.includes(menuCopy)) failures.push(`Required menu copy is missing: ${menuCopy}`);
 }
 
-if (!historyHtml.includes("Leader's of Mongolia 2025 History")) {
+if (!historyHtml.includes("Leaders Mongolia 2025 History")) {
   failures.push("The 2025 history route title is missing.");
 }
 
