@@ -3,17 +3,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const html = await readFile(path.join(root, "index.html"), "utf8");
+const htmlPaths = ["index.html", "artists/index.html"];
+const htmlPages = await Promise.all(htmlPaths.map((htmlPath) => readFile(path.join(root, htmlPath), "utf8")));
+const html = htmlPages[0];
 const fontCssPath = path.join(root, "assets/css/fonts.css");
 const fontCss = await readFile(fontCssPath, "utf8");
-const localReferences = [...html.matchAll(/(?:content|href|src)="([^"]+)"/g)]
+const localReferences = htmlPages.flatMap((page) => [...page.matchAll(/(?:content|href|src)="([^"]+)"/g)])
   .map((match) => match[1])
   .filter((reference) => reference.startsWith("/"));
 
 const failures = [];
 
 for (const reference of localReferences) {
-  const relativePath = decodeURIComponent(reference.split(/[?#]/, 1)[0]).replace(/^\/+/, "");
+  let relativePath = decodeURIComponent(reference.split(/[?#]/, 1)[0]).replace(/^\/+/, "");
+  if (relativePath.endsWith("/")) relativePath += "index.html";
 
   try {
     await access(path.join(root, relativePath));
@@ -32,8 +35,8 @@ for (const match of fontCss.matchAll(/url\(([^)]+)\)/g)) {
   }
 }
 
-if (!html.includes('lang="mn"')) {
-  failures.push("The document language is not Mongolian.");
+for (const [index, page] of htmlPages.entries()) {
+  if (!page.includes('lang="mn"')) failures.push(`${htmlPaths[index]} language is not Mongolian.`);
 }
 
 if (!fontCss.includes("U+0400-045F") || !fontCss.includes("U+0460-052F")) {

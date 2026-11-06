@@ -21,7 +21,7 @@ const mimeTypes = new Map([
 const server = createServer(async (request, response) => {
   const requestPath = new URL(request.url ?? "/", "http://localhost").pathname;
   const relativePath = requestPath === "/" ? "index.html" : decodeURIComponent(requestPath).replace(/^\/+/, "");
-  const filePath = path.resolve(root, relativePath);
+  let filePath = path.resolve(root, relativePath);
 
   if (!filePath.startsWith(`${root}${path.sep}`)) {
     response.writeHead(403).end("Forbidden");
@@ -29,7 +29,12 @@ const server = createServer(async (request, response) => {
   }
 
   try {
-    const details = await stat(filePath);
+    let details = await stat(filePath);
+
+    if (details.isDirectory()) {
+      filePath = path.join(filePath, "index.html");
+      details = await stat(filePath);
+    }
 
     if (!details.isFile()) {
       throw new Error("Not a file");

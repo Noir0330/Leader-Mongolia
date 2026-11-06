@@ -436,10 +436,52 @@ body:has(.thanks-bar) .music-btn{bottom:92px}
 .hero-wish strong{display:block;margin-top:4px;color:var(--ink);font-size:clamp(1.45rem,6vw,2rem);font-weight:500}
 
 .sec-tickets{max-width:none;padding-inline:20px;background:linear-gradient(180deg,color-mix(in srgb,var(--soft) 36%,transparent),transparent)}
-.sec-artists{max-width:none;background:linear-gradient(180deg,transparent,color-mix(in srgb,var(--soft) 30%,transparent),transparent)}
-.artist-preview{max-width:380px;margin:26px auto 0;padding:34px 24px;border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);border-radius:26px;background:linear-gradient(145deg,color-mix(in srgb,var(--paper) 94%,#fff),var(--paper));box-shadow:inset 0 0 0 7px color-mix(in srgb,var(--accent) 5%,transparent),0 22px 55px -38px rgba(0,0,0,.9)}
-.artist-preview svg{width:48px;height:48px;fill:none;stroke:var(--accent);stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
-.artist-preview p{margin:16px 0 0;color:var(--muted);font-family:var(--f-display);font-size:1.15rem}
+.artists-route{min-height:100svh;background:radial-gradient(80% 55% at 50% 10%,var(--paper),transparent 72%)}
+.artists-route-hero{position:relative;min-height:76svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:90px 24px 80px;text-align:center;overflow:hidden}
+.artists-route-back{position:absolute;top:22px;left:22px;display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.75rem;letter-spacing:.08em;text-decoration:none}
+.artists-route-back:hover{color:var(--accent)}
+.artists-route-back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.artists-route-mark{width:108px;height:108px;display:grid;place-items:center;margin-bottom:24px;border:1px solid color-mix(in srgb,var(--accent) 55%,transparent);border-radius:50%;color:var(--accent);box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 5%,transparent)}
+.artists-route-mark svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.15;stroke-linecap:round;stroke-linejoin:round}
+.artists-route h1{font-family:var(--f-display);font-size:clamp(3rem,12vw,5.4rem);line-height:1;color:var(--ink)}
+.artists-route-lead{max-width:430px;margin:18px auto 0;color:var(--muted);font-family:var(--f-display);font-size:clamp(1.1rem,4vw,1.35rem);line-height:1.55}
+.artist-count{display:flex;align-items:center;gap:12px;margin-top:28px;padding:9px 16px;border-block:1px solid color-mix(in srgb,var(--accent) 34%,transparent);text-align:left}
+.artist-count strong{font-family:var(--f-display);font-size:2.4rem;font-weight:400;line-height:1;color:var(--accent)}
+.artist-count span{color:var(--muted);font-size:.58rem;line-height:1.35;letter-spacing:.12em;text-transform:uppercase}
+.artist-lineup{position:relative;max-width:980px;margin:0 auto;padding:12px 20px 30px}
+.artist-lineup-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 18px;padding:0 4px 12px;border-bottom:1px solid color-mix(in srgb,var(--accent) 26%,transparent);color:var(--accent)}
+.artist-lineup-head p{margin:0;font-size:.65rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+.artist-lineup-head span{font-family:var(--f-display);font-size:.76rem;letter-spacing:.3em}
+.artist-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.artist-card{position:relative;min-height:230px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:25px;border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:26px;background:linear-gradient(145deg,color-mix(in srgb,var(--paper) 95%,#fff),var(--paper));box-shadow:inset 0 0 0 7px color-mix(in srgb,var(--accent) 4%,transparent),0 24px 58px -42px rgba(0,0,0,.9);text-align:left}
+.artist-card::before{content:"";position:absolute;inset:8px;border:1px solid color-mix(in srgb,var(--accent) 10%,transparent);border-radius:19px;pointer-events:none}
+.artist-no{position:absolute;z-index:2;top:20px;right:22px;color:var(--accent);font:500 .62rem/1 var(--f-body);letter-spacing:.18em}
+.artist-monogram{position:absolute;top:24px;left:24px;width:62px;height:62px;display:grid;place-items:center;border:1px solid color-mix(in srgb,var(--accent) 42%,transparent);border-radius:50%;color:var(--accent);font-family:var(--f-display);font-size:1.3rem;letter-spacing:.04em;background:color-mix(in srgb,var(--accent) 5%,transparent)}
+.artist-monogram svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round}
+.artist-card-copy{position:relative;z-index:2}
+.artist-eyebrow{margin:0 0 7px;color:var(--accent);font-size:.6rem;font-weight:600;line-height:1.4;letter-spacing:.14em;text-transform:uppercase}
+.artist-card h2{font-family:var(--f-display);font-size:clamp(1.75rem,5vw,2.4rem);font-weight:400;line-height:1.05;color:var(--ink)}
+.artist-card-copy>p:last-child:not(.artist-eyebrow){margin:8px 0 0;color:var(--muted);font-size:.8rem;line-height:1.45}
+.artist-card-featured{grid-column:1/-1;min-height:270px;padding-left:128px;background:radial-gradient(70% 110% at 0% 50%,color-mix(in srgb,var(--soft) 78%,transparent),transparent),linear-gradient(145deg,color-mix(in srgb,var(--paper) 95%,#fff),var(--paper))}
+.artist-card-featured .artist-monogram{top:50%;left:32px;width:76px;height:76px;transform:translateY(-50%);font-size:1.6rem}
+.artist-card-featured .artist-eyebrow{max-width:34ch}
+.artist-card-photo{grid-column:1/-1;min-height:0;aspect-ratio:16/9;padding:32px}
+.artist-card-photo::before{z-index:1;inset:0;border:0;border-radius:0;background:linear-gradient(180deg,transparent 28%,rgba(6,12,26,.92) 100%)}
+.artist-card-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 44%}
+.artist-card-photo .artist-no{color:#fff}
+.artist-card-photo .artist-eyebrow{color:#f0ca76}
+.artist-card-photo h2{font-size:clamp(2.2rem,8vw,4rem);color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.65)}
+.artist-card-photo .artist-card-copy>p:last-child{color:rgba(255,255,255,.72);letter-spacing:.18em;text-transform:uppercase}
+.artist-card-compact{min-height:190px}
+.artists-route-footer{padding:36px 20px 130px;text-align:center;color:var(--muted);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase}
+@media (max-width:600px){
+  .artists-route-hero{min-height:70svh;padding-bottom:62px}
+  .artist-grid{grid-template-columns:1fr}
+  .artist-card-featured,.artist-card-photo{grid-column:auto}
+  .artist-card-featured{min-height:300px;padding:118px 24px 25px}
+  .artist-card-featured .artist-monogram{top:26px;left:24px;transform:none}
+  .artist-card-photo{aspect-ratio:4/3;padding:25px}
+}
 .ticket-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:780px;margin:32px auto 0}
 .ticket-card{position:relative;overflow:hidden;min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 18px;border:1px solid color-mix(in srgb,var(--accent) 38%,transparent);border-radius:22px;background:linear-gradient(155deg,color-mix(in srgb,var(--paper) 94%,#fff),var(--paper));box-shadow:0 18px 45px -32px rgba(0,0,0,.8)}
 .ticket-card::before{content:"";position:absolute;inset:8px;border:1px solid color-mix(in srgb,var(--accent) 15%,transparent);border-radius:16px;pointer-events:none}
