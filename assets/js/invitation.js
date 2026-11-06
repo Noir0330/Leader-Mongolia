@@ -5,6 +5,48 @@
   var audio = document.getElementById('bgm');
   var mbtn = document.getElementById('musicBtn');
 
+  // Yjet dhe flokët e borës ndajnë një shtresë globale në të gjithë faqen.
+  var globalFx = document.getElementById('globalFx');
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (globalFx && window.Snowflakes && !reducedMotion) {
+    new window.Snowflakes({
+      container: globalFx,
+      color: '#fff',
+      count: window.innerWidth < 600 ? 24 : 36,
+      minOpacity: 0.28,
+      maxOpacity: 0.8,
+      minSize: 9,
+      maxSize: 24,
+      rotation: true,
+      speed: 0.7,
+      wind: true,
+      zIndex: 1,
+      autoResize: true
+    });
+  }
+
+  // Angel Event hero footage: эхний 13 секундыг тасралтгүй давтана.
+  var heroVideo = document.querySelector('.hero-video[data-loop-end]');
+  if (heroVideo) {
+    var heroLoopEnd = Number(heroVideo.getAttribute('data-loop-end')) || 13;
+    if (reducedMotion) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    } else {
+      heroVideo.addEventListener('timeupdate', function () {
+        if (heroVideo.currentTime >= heroLoopEnd) {
+          heroVideo.currentTime = 0;
+          heroVideo.play().catch(function () {});
+        }
+      });
+      heroVideo.addEventListener('ended', function () {
+        heroVideo.currentTime = 0;
+        heroVideo.play().catch(function () {});
+      });
+      heroVideo.play().catch(function () {});
+    }
+  }
+
   function playMusic() {
     if (!audio) return;
     audio.volume = 0.7;
@@ -13,6 +55,70 @@
   if (mbtn) mbtn.addEventListener('click', function () {
     if (audio.paused) playMusic(); else { audio.pause(); mbtn.classList.remove('on'); }
   });
+
+  // Mobile navigation: үндсэн хоёр холбоос + бусад хэсгийн burger drawer.
+  var mobileNav = document.querySelector('.mobile-nav');
+  if (mobileNav) {
+    var navLinks = [].slice.call(mobileNav.querySelectorAll('a[href^="#"]'));
+    var menuToggle = mobileNav.querySelector('.mobile-menu-toggle');
+    var menuPanel = mobileNav.querySelector('.mobile-menu-panel');
+    var menuBackdrop = mobileNav.querySelector('.mobile-menu-backdrop');
+    var menuClose = mobileNav.querySelector('.mobile-menu-close');
+    var sectionIds = ['top', 'artists', 'tickets', 'program', 'location'];
+    var setMenu = function (open, restoreFocus) {
+      mobileNav.classList.toggle('is-open', open);
+      document.body.classList.toggle('mobile-menu-open', open);
+      menuToggle.setAttribute('aria-expanded', String(open));
+      menuPanel.setAttribute('aria-hidden', String(!open));
+      if (open) {
+        menuPanel.removeAttribute('inert');
+        setTimeout(function () { menuClose.focus(); }, 50);
+      } else {
+        menuPanel.setAttribute('inert', '');
+        if (restoreFocus) menuToggle.focus();
+      }
+    };
+    menuToggle.addEventListener('click', function () { setMenu(!mobileNav.classList.contains('is-open')); });
+    menuBackdrop.addEventListener('click', function () { setMenu(false, true); });
+    menuClose.addEventListener('click', function () { setMenu(false, true); });
+    navLinks.forEach(function (link) {
+      link.addEventListener('click', function () { setMenu(false, Boolean(link.closest('.mobile-menu-panel'))); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!mobileNav.classList.contains('is-open')) return;
+      if (e.key === 'Escape') { setMenu(false, true); return; }
+      if (e.key === 'Tab') {
+        var focusable = [].slice.call(menuPanel.querySelectorAll('a,button'));
+        var first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+    var updateNav = function () {
+      var currentId = 'top';
+      var marker = window.scrollY + window.innerHeight * 0.42;
+      sectionIds.forEach(function (id) {
+        var section = document.getElementById(id);
+        if (section && section.offsetTop <= marker) currentId = id;
+      });
+      navLinks.forEach(function (link) {
+        if (link.getAttribute('href') === '#' + currentId) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+      menuToggle.classList.toggle('is-contextual', ['tickets', 'program', 'location'].indexOf(currentId) !== -1);
+    };
+    var navTicking = false;
+    window.addEventListener('scroll', function () {
+      if (navTicking) return;
+      navTicking = true;
+      window.requestAnimationFrame(function () { updateNav(); navTicking = false; });
+    }, { passive: true });
+    window.addEventListener('resize', function () {
+      updateNav();
+      if (window.innerWidth > 720 && mobileNav.classList.contains('is-open')) setMenu(false);
+    });
+    updateNav();
+  }
 
   // Animacionet kur seksionet hyjnë në ekran
   var items = [].slice.call(document.querySelectorAll('.rv'));
