@@ -59,29 +59,11 @@
     });
   }
 
-  // Angel Event hero footage: эхний 13 секундыг тасралтгүй давтана.
-  function setupHeroVideo() {
-    var heroVideo = document.querySelector('.hero-video[data-loop-end]');
-    if (!heroVideo) return;
-    var heroLoopEnd = Number(heroVideo.getAttribute('data-loop-end')) || 13;
-    if (reducedMotion) {
-      heroVideo.removeAttribute('autoplay');
-      heroVideo.pause();
-      return;
-    }
-    heroVideo.addEventListener('timeupdate', function () {
-      if (heroVideo.currentTime >= heroLoopEnd) {
-        heroVideo.currentTime = 0;
-        heroVideo.play().catch(function () {});
-      }
-    });
-    heroVideo.addEventListener('ended', function () {
-      heroVideo.currentTime = 0;
-      heroVideo.play().catch(function () {});
-    });
-    heroVideo.play().catch(function () {});
+  var heroVideo = document.querySelector('.hero-video');
+  if (heroVideo && reducedMotion) {
+    heroVideo.removeAttribute('autoplay');
+    heroVideo.pause();
   }
-  setupHeroVideo();
 
   function playMusic(startTime) {
     if (!audio) return;

@@ -1,0 +1,58 @@
+- generic [active] [ref=e1]:
+  - generic [aria-hidden]:
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - link "Урилга руу буцах" [ref=e28] [cursor=pointer]:
+        - /url: /
+      - paragraph [ref=e34]: Тасалбарын мэдээлэл
+      - heading "Тасалбарын төрөл" [level=1] [ref=e35]
+      - paragraph [ref=e36]: Шинэ жилийн онцгой үдшийн тасалбарын төрөл болон үнийн мэдээлэл.
+      - generic [ref=e37]:
+        - generic [ref=e38]: "2026"
+        - strong [ref=e40]: 12 · 26
+      - text: ✦ · ❄ · ✦
+    - region "Тасалбарын төрлүүд" [ref=e41]:
+      - generic [ref=e42]:
+        - paragraph [ref=e43]: Үнийн мэдээлэл
+        - generic [ref=e44]: ✦ ❄ ✦
+      - generic [ref=e45]:
+        - article [ref=e46]:
+          - generic [ref=e47]: "01"
+          - generic [aria-hidden] [ref=e48]: ✦
+          - paragraph [ref=e49]: VVIP
+          - strong [ref=e50]: 600,000₮
+        - article [ref=e52]:
+          - generic [ref=e53]: "02"
+          - generic [aria-hidden] [ref=e54]: ✦
+          - paragraph [ref=e55]: VIP
+          - strong [ref=e56]: 500,000₮
+        - article [ref=e58]:
+          - generic [ref=e59]: "03"
+          - generic [aria-hidden] [ref=e60]: ✦
+          - paragraph [ref=e61]: Regular
+          - strong [ref=e62]: 400,000₮
+      - generic [ref=e64]:
+        - paragraph [ref=e65]: Холбоо барих
+        - generic [ref=e66]:
+          - link "9911 2817" [ref=e67] [cursor=pointer]:
+            - /url: tel:99112817
+          - link "8010 7799" [ref=e69] [cursor=pointer]:
+            - /url: tel:80107799
+    - generic [ref=e70]:
+      - paragraph [ref=e71]: Leader’s of Mongolia · 2026
+      - paragraph [ref=e73]:
+        - generic [ref=e74]: Presented by
+        - strong [ref=e75]: Angel Ina Ica LLC
+      - generic [ref=e76]:
+        - text: "Хөгжим:"
+        - link "“Jingle Joy” – theorienvibes" [ref=e77] [cursor=pointer]:
+          - /url: https://pixabay.com/music/pop-jingle-joy-264041/
+  - button "Хөгжим" [ref=e78] [cursor=pointer]

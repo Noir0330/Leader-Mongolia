@@ -24,4 +24,4 @@ Repo-г Vercel-д import хийгээд Framework Preset-ийг `Other` байл
 
 ## Content update
 
-Урилгын текст, 2026 оны 12 сарын 26-ны countdown, Galaxy Event Hall байршил болон хөтөлбөрийг `index.html` дотроос шинэчилнэ. Тасалбарын мэдээлэл `tickets/index.html` дотор байрлана.
+Урилгын текст, 2026 оны 12 сарын 26-ны countdown, Galaxy Event Hall байршил болон хөтөлбөрийг `index.html` дотроос шинэчилнэ. Тасалбарын мэдээлэл `tickets/index.html`, үдшийн зоогийн цэс `menu/index.html` дотор байрлана.
