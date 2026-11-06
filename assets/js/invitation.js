@@ -4,11 +4,12 @@
   var body = document.body;
   var audio = document.getElementById('bgm');
   var mbtn = document.getElementById('musicBtn');
-  var musicStateKey = 'leaders-music-state-v1';
+  var musicStateKey = 'leaders-music-state-v2';
   var invitationOpenedKey = 'leaders-invitation-opened-v1';
   var musicShouldPlay = false;
   var lastKnownMusicTime = 0;
   var navigationStateSaved = false;
+  var musicState = { playing: false, activeSrc: '', tracks: {} };
 
   function readSession(key) {
     try { return window.sessionStorage.getItem(key); } catch (e) { return null; }
@@ -23,20 +24,42 @@
     if (!saved) return null;
     try {
       var state = JSON.parse(saved);
-      if (typeof state.currentTime !== 'number' || typeof state.playing !== 'boolean') return null;
+      if (typeof state.playing !== 'boolean' || !state.tracks || typeof state.tracks !== 'object') return null;
       return state;
     } catch (e) { return null; }
   }
 
+  function normalizeMusicSrc(src) {
+    if (!src) return '';
+    try { return new URL(src, window.location.href).pathname; } catch (e) { return src; }
+  }
+
+  function currentMusicSrc() {
+    if (!audio) return '';
+    return normalizeMusicSrc(audio.getAttribute('src') || audio.currentSrc);
+  }
+
+  function savedTrackTime(src, includeElapsed) {
+    var track = musicState.tracks[normalizeMusicSrc(src)];
+    if (!track || !Number.isFinite(track.currentTime)) return 0;
+    var elapsed = includeElapsed && musicState.playing && track.savedAt
+      ? Math.max(0, (Date.now() - track.savedAt) / 1000)
+      : 0;
+    return Math.max(0, track.currentTime + elapsed);
+  }
+
   function saveMusicState(playing, currentTime) {
     if (!audio) return;
-    writeSession(musicStateKey, JSON.stringify({
+    var src = currentMusicSrc();
+    musicState.playing = typeof playing === 'boolean' ? playing : musicShouldPlay;
+    musicState.activeSrc = src;
+    musicState.tracks[src] = {
       currentTime: Number.isFinite(currentTime)
         ? currentTime
         : (Number.isFinite(audio.currentTime) ? audio.currentTime : lastKnownMusicTime),
-      playing: typeof playing === 'boolean' ? playing : musicShouldPlay,
       savedAt: Date.now()
-    }));
+    };
+    writeSession(musicStateKey, JSON.stringify(musicState));
   }
 
   // Yjet dhe flokët e borës ndajnë një shtresë globale në të gjithë faqen.
@@ -59,52 +82,87 @@
     });
   }
 
-  var heroVideo = document.querySelector('.hero-video');
-  if (heroVideo && reducedMotion) {
-    heroVideo.removeAttribute('autoplay');
-    heroVideo.pause();
+  function setupHeroVideo() {
+    var heroVideo = document.querySelector('.hero-video');
+    if (!heroVideo) return;
+    if (reducedMotion) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    } else heroVideo.play().catch(function () {});
+  }
+  setupHeroVideo();
+
+  function seekMusic(startTime) {
+    if (!audio || !Number.isFinite(startTime)) return;
+    var applyTime = function () {
+      var nextTime = Math.max(0, startTime);
+      if (Number.isFinite(audio.duration) && audio.duration > 0) nextTime %= audio.duration;
+      audio.currentTime = nextTime;
+      lastKnownMusicTime = nextTime;
+    };
+    if (audio.readyState >= 1) applyTime();
+    else audio.addEventListener('loadedmetadata', applyTime, { once: true });
+  }
+
+  function syncMusicVideo(startTime) {
+    if (!audio || !Number.isFinite(startTime)) return;
+    var selector = audio.getAttribute('data-sync-video');
+    var video = selector && document.querySelector(selector);
+    if (!video) return;
+    var applyTime = function () {
+      var nextTime = Math.max(0, startTime);
+      if (Number.isFinite(video.duration) && video.duration > 0) nextTime %= video.duration;
+      video.currentTime = nextTime;
+      if (!reducedMotion) video.play().catch(function () {});
+    };
+    if (video.readyState >= 1) applyTime();
+    else video.addEventListener('loadedmetadata', applyTime, { once: true });
   }
 
   function playMusic(startTime) {
     if (!audio) return;
     musicShouldPlay = true;
     audio.volume = 0.7;
+    var nextTime = Number.isFinite(startTime) ? startTime : audio.currentTime;
+    seekMusic(nextTime);
+    syncMusicVideo(nextTime);
     audio.play().then(function () {
-      if (Number.isFinite(startTime)) {
-        audio.currentTime = startTime;
-        lastKnownMusicTime = startTime;
-      }
       mbtn && mbtn.classList.add('on');
       saveMusicState(true);
     }).catch(function () {});
   }
+
+  function setMusicSource(src) {
+    var nextSrc = normalizeMusicSrc(src);
+    if (!audio || !nextSrc || currentMusicSrc() === nextSrc) return;
+    saveMusicState(undefined, lastKnownMusicTime);
+    var shouldResume = musicShouldPlay;
+    audio.pause();
+    audio.setAttribute('src', nextSrc);
+    lastKnownMusicTime = savedTrackTime(nextSrc, false);
+    audio.load();
+    if (shouldResume) playMusic(lastKnownMusicTime);
+    else {
+      seekMusic(lastKnownMusicTime);
+      saveMusicState(false, lastKnownMusicTime);
+    }
+  }
+
   if (mbtn) mbtn.addEventListener('click', function () {
     if (audio.paused) playMusic();
     else { musicShouldPlay = false; audio.pause(); mbtn.classList.remove('on'); saveMusicState(false); }
   });
 
-  // Route солигдоход хөгжим тоглосон секунд, төлөвөө хадгалж дараагийн хуудсанд үргэлжлүүлнэ.
+  // Route болон track бүрийн тоглосон секунд, асаалттай төлөвийг хадгална.
   if (audio) {
     var savedMusicState = readMusicState();
-    musicShouldPlay = Boolean(savedMusicState && savedMusicState.playing);
-    var restoreMusic = function () {
-      if (!savedMusicState) return;
-      var elapsed = savedMusicState.playing && savedMusicState.savedAt
-        ? Math.max(0, (Date.now() - savedMusicState.savedAt) / 1000)
-        : 0;
-      var nextTime = Math.max(0, savedMusicState.currentTime + elapsed);
-      if (Number.isFinite(audio.duration) && audio.duration > 0) nextTime %= audio.duration;
-      if (savedMusicState.playing) playMusic(nextTime);
-      else {
-        audio.currentTime = nextTime;
-        lastKnownMusicTime = nextTime;
-      }
-    };
-
-    if (audio.readyState >= 1) restoreMusic();
-    else if (savedMusicState) {
-      audio.addEventListener('loadedmetadata', restoreMusic, { once: true });
-      audio.load();
+    if (savedMusicState) {
+      musicState = savedMusicState;
+      musicShouldPlay = savedMusicState.playing;
+      var initialSrc = currentMusicSrc();
+      var initialTime = savedTrackTime(initialSrc, savedMusicState.activeSrc === initialSrc);
+      if (musicShouldPlay) playMusic(initialTime);
+      else seekMusic(initialTime);
     }
 
     var lastMusicSave = 0;
@@ -129,6 +187,15 @@
       if (!navigationStateSaved) saveMusicState(undefined, lastKnownMusicTime);
     });
   }
+
+  function setupMusicContext(sourceAudio) {
+    if (!audio || !sourceAudio) return;
+    var syncVideo = sourceAudio.getAttribute('data-sync-video');
+    if (syncVideo) audio.setAttribute('data-sync-video', syncVideo);
+    else audio.removeAttribute('data-sync-video');
+    setMusicSource(sourceAudio.getAttribute('src'));
+  }
+  setupMusicContext(audio);
 
   // Mobile navigation: үндсэн холбоосууд + бусад хэсгийн burger drawer.
   var mobileNavController;
@@ -219,7 +286,7 @@
     var open = function () {
       if (opened) return; opened = true;
       writeSession(invitationOpenedKey, '1');
-      body.classList.add('opened'); playMusic();
+      body.classList.add('opened'); playMusic(0);
       setTimeout(reveal, 1500);
       setTimeout(function () { env.remove(); }, 2500);
     };
@@ -304,12 +371,13 @@
   function normalizeRoute(pathname) {
     var path = pathname.replace(/\/index\.html$/, '/');
     if (path === '/artists') return '/artists/';
+    if (path === '/menu') return '/menu/';
     if (path === '/tickets') return '/tickets/';
     return path;
   }
   function isSoftRoute(pathname) {
     var path = normalizeRoute(pathname);
-    return path === '/' || path === '/artists/' || path === '/tickets/';
+    return path === '/' || path === '/artists/' || path === '/menu/' || path === '/tickets/';
   }
   function updateDescription(nextDocument) {
     var current = document.querySelector('meta[name="description"]');
@@ -337,6 +405,7 @@
     navigationStateSaved = false;
     setupMobileNav();
     setupHeroVideo();
+    setupMusicContext(nextDocument.querySelector('#bgm'));
     setupCountdown();
     reveal();
 

@@ -1,0 +1,173 @@
+- generic [active] [ref=e1]:
+  - button "Шинэ жилийн урилгыг нээх" [ref=e2] [cursor=pointer]:
+    - generic [ref=e3]:
+      - paragraph [ref=e4]:
+        - generic [ref=e5]: ✦
+        - text: Шинэ жилийн эрхэмсэг үдэш
+        - generic [ref=e6]: ✦
+      - generic [ref=e7]:
+        - generic [ref=e9]:
+          - paragraph [ref=e10]: The Leader’s of Mongolia
+          - paragraph [ref=e11]:
+            - generic [ref=e12]: Happy
+            - strong [ref=e13]: New Year
+          - paragraph [ref=e14]: "2026"
+          - text: ✦ ❄ ✦
+        - generic [ref=e17]:
+          - generic [ref=e18]: L
+          - text: ✦
+      - generic [ref=e19]:
+        - paragraph [ref=e20]:
+          - generic [ref=e21]: Уулзах он
+          - strong [ref=e22]: "2026"
+        - paragraph [ref=e23]: Leader’s of Mongolia
+        - paragraph [ref=e24]: Шинэ оноо хамтдаа угтъя
+        - paragraph [ref=e25]:
+          - generic [ref=e26]: Урилгаа нээх
+          - generic [aria-hidden] [ref=e27]: →
+  - generic [aria-hidden]:
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - text: ❄ ✦
+    - generic: ❄ ✦
+    - generic: ❄ ✦
+    - text: ❄ ✦ ❄ ✦ ❄ ✦
+  - navigation "Үндсэн цэс":
+    - generic [aria-hidden]:
+      - text: ✦ ❄ ✦ ❄ ✦
+      - generic:
+        - generic:
+          - generic: Leader’s of Mongolia
+          - strong: Үндсэн цэс
+        - button
+      - generic:
+        - link:
+          - /url: "#top"
+          - generic: Урилга
+          - generic: ↗
+        - link:
+          - /url: /artists/index.html
+          - generic: Уран бүтээлчид
+          - generic: ↗
+        - link:
+          - /url: /menu/
+          - generic: Цэс
+          - generic: ↗
+        - link:
+          - /url: /tickets/
+          - generic: Тасалбар
+          - generic: ↗
+        - link:
+          - /url: "#program"
+          - generic: Хөтөлбөр
+          - generic: ↗
+        - link:
+          - /url: "#location"
+          - generic: Байршил
+          - generic: ↗
+        - link:
+          - /url: /history-2025/
+          - generic: Leader's of Mongolia 2025 History
+          - generic: ↗
+    - generic:
+      - text: ✦ ❄ ✦ ❄ ✦ ❄ ✦
+      - link "Урилга":
+        - /url: "#top"
+      - link "Уран бүтээлчид":
+        - /url: /artists/index.html
+      - link "Цэс":
+        - /url: /menu/
+      - link "Тасалбар":
+        - /url: /tickets/
+      - button "Бусад"
+  - main [ref=e28]:
+    - generic [ref=e29]:
+      - generic [aria-hidden]:
+        - generic: ✦
+        - generic: ❄
+      - generic [ref=e33]:
+        - paragraph [ref=e34]:
+          - text: Happy
+          - generic [ref=e35]: New Year
+        - generic [ref=e36]:
+          - paragraph [ref=e37]: Амжилтын эзэд нэгэн дор.Ирээдүйг бүтээгчид нэгэн үдэш.
+          - paragraph [ref=e38]:
+            - generic [ref=e39]: "2026"
+            - text: The Leader’s of Mongolia
+      - link "Дэлгэрэнгүй үзэх" [ref=e40] [cursor=pointer]:
+        - /url: "#s1"
+    - generic [ref=e43]:
+      - paragraph [ref=e44]: The Leader’s of Mongolia — 2026
+      - heading "Эрхэмсэг үдэш таныг урьж байна" [level=1] [ref=e45]
+      - generic [ref=e46]:
+        - paragraph [ref=e47]:
+          - text: Жил бүрийн хүсэн хүлээдэг, уламжлал болсон
+          - strong [ref=e48]: The Leader’s of Mongolia
+          - text: — Монголын лидер залуучууд, манлайлагчид, амжилтын эзэд, ирээдүйг бүтээгчид нэгэн дор цуглах эрхэмсэг үдэш таныг урьж байна.
+        - paragraph [ref=e49]:
+          - strong [ref=e50]: Leader’s of Mongolia
+          - text: бол зүгээр нэг шинэ жилийн баяр биш. Энэ бол та болон танай байгууллагын амжилтыг алдаршуулж, манлайллыг хүндэтгэх, шинэ боломж, шинэ түншлэл, шинэ түүхийн эхлэл болох шинэ жилийн баяр юм.
+        - paragraph [ref=e51]: Амжилтаа тэмдэглэж.Нөхөрлөлөө бататгаж.Шинэ боломжоо нээж.Шинэ оноо хамтдаа угтъя!
+    - generic [ref=e52]:
+      - paragraph [ref=e53]: Арга хэмжээ эхлэхэд
+      - generic [ref=e54]:
+        - generic [ref=e55]: "2026"
+        - strong [ref=e56]: 12 сарын 26
+        - generic [ref=e57]: Galaxy Event Hall
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]: "49"
+          - generic [ref=e61]: Өдөр
+        - generic [ref=e63]:
+          - generic [ref=e64]: "06"
+          - generic [ref=e65]: Цаг
+        - generic [ref=e67]:
+          - generic [ref=e68]: "11"
+          - generic [ref=e69]: Минут
+        - generic [ref=e71]:
+          - generic [ref=e72]: "32"
+          - generic [ref=e73]: Секунд
+    - region [ref=e74]:
+      - generic [ref=e75]:
+        - text: ◆
+        - paragraph [ref=e76]: Ивээн тэтгэгчид
+        - generic [ref=e77]:
+          - img "Хусхан — Эх хүүхэд, гэр бүлийн амралтын газар" [ref=e79]
+          - img "Bia Saigon" [ref=e81]
+        - text: ◆
+    - generic [ref=e82]:
+      - paragraph [ref=e83]: 2026 оны 12 сарын 26
+      - heading "Хөтөлбөр" [level=2] [ref=e84]
+      - list [ref=e85]:
+        - listitem [ref=e86]:
+          - generic [ref=e87]: 19:00
+          - heading "Зочдыг угтах" [level=3] [ref=e93]
+        - listitem [ref=e94]:
+          - generic [ref=e95]: 19:30
+          - heading "Хундага өргөх" [level=3] [ref=e100]
+        - listitem [ref=e101]:
+          - generic [ref=e102]: 20:00
+          - heading "Оройн зоог" [level=3] [ref=e107]
+        - listitem [ref=e108]:
+          - generic [ref=e109]: 21:30
+          - heading "Хөгжим, баярын үдэш" [level=3] [ref=e116]
+    - generic [ref=e117]:
+      - paragraph [ref=e118]: Байршил
+      - heading "Galaxy Event Hall" [level=2] [ref=e119]
+      - paragraph [ref=e120]: Хан-Уул дүүрэг, 11-р хороо, Гантиг Виллагийн баруун талд, Galaxy Complex, 8 давхар
+      - iframe [ref=e125]
+      - link "Google Maps дээр нээх" [ref=e126] [cursor=pointer]:
+        - /url: https://www.google.com/maps/place/Galaxy+Ballroom+Ulaanbaatar/@47.8851448,106.918111,571m/data=!3m2!1e3!4b1!4m6!3m5!1s0x5d9693537b9a89df:0x232fc428baa70670!8m2!3d47.8851448!4d106.9206913!16s%2Fg%2F11nw7svvk4?entry=ttu&g_ep=EgoyMDI2MTEwMy4wIKXMDSoASAFQAw%3D%3D
+    - generic [ref=e129]:
+      - generic [ref=e130]:
+        - paragraph [ref=e154]: Шинэ оноо хамтдаа угтъя
+        - paragraph [ref=e155]: Leader’s of Mongolia
+        - paragraph [ref=e156]: "2026"
+        - paragraph [ref=e158]:
+          - generic [ref=e159]: Presented by
+          - strong [ref=e160]: Angel Ina Ica LLC
+      - paragraph [ref=e161]:
+        - text: "Хөгжим:"
+        - link "“Jingle Joy” – theorienvibes" [ref=e162] [cursor=pointer]:
+          - /url: https://pixabay.com/music/pop-jingle-joy-264041/
+  - button "Хөгжим" [ref=e163] [cursor=pointer]
