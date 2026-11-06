@@ -40,9 +40,38 @@ const server = createServer(async (request, response) => {
       throw new Error("Not a file");
     }
 
+    const contentType = mimeTypes.get(path.extname(filePath)) ?? "application/octet-stream";
+    const range = request.headers.range?.match(/^bytes=(\d*)-(\d*)$/);
+    if (range) {
+      const suffixLength = range[1] === "" ? Number.parseInt(range[2], 10) : null;
+      const start = suffixLength === null
+        ? Number.parseInt(range[1], 10)
+        : Math.max(0, details.size - suffixLength);
+      const end = suffixLength === null && range[2] !== ""
+        ? Math.min(Number.parseInt(range[2], 10), details.size - 1)
+        : details.size - 1;
+
+      if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || start > end || start >= details.size) {
+        response.writeHead(416, { "Content-Range": `bytes */${details.size}` }).end();
+        return;
+      }
+
+      response.writeHead(206, {
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "no-store",
+        "Content-Length": end - start + 1,
+        "Content-Range": `bytes ${start}-${end}/${details.size}`,
+        "Content-Type": contentType,
+      });
+      createReadStream(filePath, { start, end }).pipe(response);
+      return;
+    }
+
     response.writeHead(200, {
+      "Accept-Ranges": "bytes",
       "Cache-Control": "no-store",
-      "Content-Type": mimeTypes.get(path.extname(filePath)) ?? "application/octet-stream",
+      "Content-Length": details.size,
+      "Content-Type": contentType,
     });
     createReadStream(filePath).pipe(response);
   } catch {

@@ -4,6 +4,40 @@
   var body = document.body;
   var audio = document.getElementById('bgm');
   var mbtn = document.getElementById('musicBtn');
+  var musicStateKey = 'leaders-music-state-v1';
+  var invitationOpenedKey = 'leaders-invitation-opened-v1';
+  var musicShouldPlay = false;
+  var lastKnownMusicTime = 0;
+  var navigationStateSaved = false;
+
+  function readSession(key) {
+    try { return window.sessionStorage.getItem(key); } catch (e) { return null; }
+  }
+
+  function writeSession(key, value) {
+    try { window.sessionStorage.setItem(key, value); } catch (e) {}
+  }
+
+  function readMusicState() {
+    var saved = readSession(musicStateKey);
+    if (!saved) return null;
+    try {
+      var state = JSON.parse(saved);
+      if (typeof state.currentTime !== 'number' || typeof state.playing !== 'boolean') return null;
+      return state;
+    } catch (e) { return null; }
+  }
+
+  function saveMusicState(playing, currentTime) {
+    if (!audio) return;
+    writeSession(musicStateKey, JSON.stringify({
+      currentTime: Number.isFinite(currentTime)
+        ? currentTime
+        : (Number.isFinite(audio.currentTime) ? audio.currentTime : lastKnownMusicTime),
+      playing: typeof playing === 'boolean' ? playing : musicShouldPlay,
+      savedAt: Date.now()
+    }));
+  }
 
   // Yjet dhe flokët e borës ndajnë një shtresë globale në të gjithë faqen.
   var globalFx = document.getElementById('globalFx');
@@ -26,45 +60,108 @@
   }
 
   // Angel Event hero footage: эхний 13 секундыг тасралтгүй давтана.
-  var heroVideo = document.querySelector('.hero-video[data-loop-end]');
-  if (heroVideo) {
+  function setupHeroVideo() {
+    var heroVideo = document.querySelector('.hero-video[data-loop-end]');
+    if (!heroVideo) return;
     var heroLoopEnd = Number(heroVideo.getAttribute('data-loop-end')) || 13;
     if (reducedMotion) {
       heroVideo.removeAttribute('autoplay');
       heroVideo.pause();
-    } else {
-      heroVideo.addEventListener('timeupdate', function () {
-        if (heroVideo.currentTime >= heroLoopEnd) {
-          heroVideo.currentTime = 0;
-          heroVideo.play().catch(function () {});
-        }
-      });
-      heroVideo.addEventListener('ended', function () {
+      return;
+    }
+    heroVideo.addEventListener('timeupdate', function () {
+      if (heroVideo.currentTime >= heroLoopEnd) {
         heroVideo.currentTime = 0;
         heroVideo.play().catch(function () {});
-      });
+      }
+    });
+    heroVideo.addEventListener('ended', function () {
+      heroVideo.currentTime = 0;
       heroVideo.play().catch(function () {});
-    }
+    });
+    heroVideo.play().catch(function () {});
   }
+  setupHeroVideo();
 
-  function playMusic() {
+  function playMusic(startTime) {
     if (!audio) return;
+    musicShouldPlay = true;
     audio.volume = 0.7;
-    audio.play().then(function () { mbtn && mbtn.classList.add('on'); }).catch(function () {});
+    audio.play().then(function () {
+      if (Number.isFinite(startTime)) {
+        audio.currentTime = startTime;
+        lastKnownMusicTime = startTime;
+      }
+      mbtn && mbtn.classList.add('on');
+      saveMusicState(true);
+    }).catch(function () {});
   }
   if (mbtn) mbtn.addEventListener('click', function () {
-    if (audio.paused) playMusic(); else { audio.pause(); mbtn.classList.remove('on'); }
+    if (audio.paused) playMusic();
+    else { musicShouldPlay = false; audio.pause(); mbtn.classList.remove('on'); saveMusicState(false); }
   });
 
-  // Mobile navigation: үндсэн хоёр холбоос + бусад хэсгийн burger drawer.
-  var mobileNav = document.querySelector('.mobile-nav');
-  if (mobileNav) {
+  // Route солигдоход хөгжим тоглосон секунд, төлөвөө хадгалж дараагийн хуудсанд үргэлжлүүлнэ.
+  if (audio) {
+    var savedMusicState = readMusicState();
+    musicShouldPlay = Boolean(savedMusicState && savedMusicState.playing);
+    var restoreMusic = function () {
+      if (!savedMusicState) return;
+      var elapsed = savedMusicState.playing && savedMusicState.savedAt
+        ? Math.max(0, (Date.now() - savedMusicState.savedAt) / 1000)
+        : 0;
+      var nextTime = Math.max(0, savedMusicState.currentTime + elapsed);
+      if (Number.isFinite(audio.duration) && audio.duration > 0) nextTime %= audio.duration;
+      if (savedMusicState.playing) playMusic(nextTime);
+      else {
+        audio.currentTime = nextTime;
+        lastKnownMusicTime = nextTime;
+      }
+    };
+
+    if (audio.readyState >= 1) restoreMusic();
+    else if (savedMusicState) {
+      audio.addEventListener('loadedmetadata', restoreMusic, { once: true });
+      audio.load();
+    }
+
+    var lastMusicSave = 0;
+    audio.addEventListener('timeupdate', function () {
+      lastKnownMusicTime = audio.currentTime;
+      if (Date.now() - lastMusicSave < 1000) return;
+      lastMusicSave = Date.now();
+      saveMusicState();
+    });
+
+    document.addEventListener('click', function (e) {
+      var link = e.target.closest && e.target.closest('a[href]');
+      if (!link || link.target === '_blank') return;
+      var target = new URL(link.href, window.location.href);
+      if (target.origin === window.location.origin && target.pathname !== window.location.pathname) {
+        lastKnownMusicTime = audio.currentTime;
+        saveMusicState(undefined, lastKnownMusicTime);
+        navigationStateSaved = true;
+      }
+    }, true);
+    window.addEventListener('pagehide', function () {
+      if (!navigationStateSaved) saveMusicState(undefined, lastKnownMusicTime);
+    });
+  }
+
+  // Mobile navigation: үндсэн холбоосууд + бусад хэсгийн burger drawer.
+  var mobileNavController;
+  function setupMobileNav() {
+    if (mobileNavController) mobileNavController.abort();
+    mobileNavController = new AbortController();
+    var signal = mobileNavController.signal;
+    var mobileNav = document.querySelector('.mobile-nav');
+    if (!mobileNav) return;
     var navLinks = [].slice.call(mobileNav.querySelectorAll('a[href^="#"]'));
     var menuToggle = mobileNav.querySelector('.mobile-menu-toggle');
     var menuPanel = mobileNav.querySelector('.mobile-menu-panel');
     var menuBackdrop = mobileNav.querySelector('.mobile-menu-backdrop');
     var menuClose = mobileNav.querySelector('.mobile-menu-close');
-    var sectionIds = ['top', 'artists', 'tickets', 'program', 'location'];
+    var sectionIds = ['top', 'artists', 'program', 'location'];
     var setMenu = function (open, restoreFocus) {
       mobileNav.classList.toggle('is-open', open);
       document.body.classList.toggle('mobile-menu-open', open);
@@ -78,11 +175,11 @@
         if (restoreFocus) menuToggle.focus();
       }
     };
-    menuToggle.addEventListener('click', function () { setMenu(!mobileNav.classList.contains('is-open')); });
-    menuBackdrop.addEventListener('click', function () { setMenu(false, true); });
-    menuClose.addEventListener('click', function () { setMenu(false, true); });
+    menuToggle.addEventListener('click', function () { setMenu(!mobileNav.classList.contains('is-open')); }, { signal: signal });
+    menuBackdrop.addEventListener('click', function () { setMenu(false, true); }, { signal: signal });
+    menuClose.addEventListener('click', function () { setMenu(false, true); }, { signal: signal });
     navLinks.forEach(function (link) {
-      link.addEventListener('click', function () { setMenu(false, Boolean(link.closest('.mobile-menu-panel'))); });
+      link.addEventListener('click', function () { setMenu(false, Boolean(link.closest('.mobile-menu-panel'))); }, { signal: signal });
     });
     document.addEventListener('keydown', function (e) {
       if (!mobileNav.classList.contains('is-open')) return;
@@ -93,7 +190,7 @@
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       }
-    });
+    }, { signal: signal });
     var updateNav = function () {
       var currentId = 'top';
       var marker = window.scrollY + window.innerHeight * 0.42;
@@ -105,24 +202,25 @@
         if (link.getAttribute('href') === '#' + currentId) link.setAttribute('aria-current', 'page');
         else link.removeAttribute('aria-current');
       });
-      menuToggle.classList.toggle('is-contextual', ['tickets', 'program', 'location'].indexOf(currentId) !== -1);
+      menuToggle.classList.toggle('is-contextual', ['program', 'location'].indexOf(currentId) !== -1);
     };
     var navTicking = false;
     window.addEventListener('scroll', function () {
       if (navTicking) return;
       navTicking = true;
       window.requestAnimationFrame(function () { updateNav(); navTicking = false; });
-    }, { passive: true });
+    }, { passive: true, signal: signal });
     window.addEventListener('resize', function () {
       updateNav();
       if (window.innerWidth > 720 && mobileNav.classList.contains('is-open')) setMenu(false);
-    });
+    }, { signal: signal });
     updateNav();
   }
+  setupMobileNav();
 
   // Animacionet kur seksionet hyjnë në ekran
-  var items = [].slice.call(document.querySelectorAll('.rv'));
   var reveal = function () {
+    var items = [].slice.call(document.querySelectorAll('.rv:not(.in)'));
     if (!('IntersectionObserver' in window)) { items.forEach(function (el) { el.classList.add('in'); }); return; }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
@@ -138,17 +236,25 @@
     var opened = false;
     var open = function () {
       if (opened) return; opened = true;
+      writeSession(invitationOpenedKey, '1');
       body.classList.add('opened'); playMusic();
       setTimeout(reveal, 1500);
       setTimeout(function () { env.remove(); }, 2500);
     };
-    env.addEventListener('click', open);
-    env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    if (readSession(invitationOpenedKey) === '1') {
+      env.remove(); body.classList.add('opened'); reveal();
+    } else {
+      env.addEventListener('click', open);
+      env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    }
   } else { body.classList.add('opened'); reveal(); }
 
   // Numërimi mbrapsht
-  var cd = document.querySelector('[data-cd]');
-  if (cd) {
+  var countdownTimer;
+  function setupCountdown() {
+    if (countdownTimer) clearInterval(countdownTimer);
+    var cd = document.querySelector('[data-cd]');
+    if (!cd) return;
     var target = new Date(cd.getAttribute('data-cd')).getTime();
     var u = {}; ['d', 'h', 'm', 's'].forEach(function (k) { u[k] = cd.querySelector('[data-u="' + k + '"]'); });
     var tick = function () {
@@ -158,8 +264,9 @@
       u.m.textContent = String(Math.floor(diff / 6e4) % 60).padStart(2, '0');
       u.s.textContent = String(Math.floor(diff / 1e3) % 60).padStart(2, '0');
     };
-    tick(); setInterval(tick, 1000);
+    tick(); countdownTimer = setInterval(tick, 1000);
   }
+  setupCountdown();
 
   // QR i hyrjes
   var qrEl = document.querySelector('[data-qr]');
@@ -209,4 +316,95 @@
     var sx = 0; box.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
     box.addEventListener('touchend', function (e) { var dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1)); });
   }
+
+  // Дотоод route-уудыг document reload хийхгүй сольж, нэг audio элементийг тасралтгүй хадгална.
+  var softNavigationPending = false;
+  function normalizeRoute(pathname) {
+    var path = pathname.replace(/\/index\.html$/, '/');
+    if (path === '/artists') return '/artists/';
+    if (path === '/tickets') return '/tickets/';
+    return path;
+  }
+  function isSoftRoute(pathname) {
+    var path = normalizeRoute(pathname);
+    return path === '/' || path === '/artists/' || path === '/tickets/';
+  }
+  function updateDescription(nextDocument) {
+    var current = document.querySelector('meta[name="description"]');
+    var next = nextDocument.querySelector('meta[name="description"]');
+    if (current && next) current.setAttribute('content', next.getAttribute('content') || '');
+  }
+  function finishSoftNavigation(target, nextDocument, replaceHistory) {
+    var currentMain = document.querySelector('main');
+    var currentNav = document.querySelector('.mobile-nav');
+    var nextMain = nextDocument.querySelector('main');
+    var nextNav = nextDocument.querySelector('.mobile-nav');
+    if (!currentMain || !currentNav || !nextMain || !nextNav) throw new Error('Incomplete route document');
+
+    currentMain.replaceWith(nextMain);
+    currentNav.replaceWith(nextNav);
+    document.title = nextDocument.title;
+    updateDescription(nextDocument);
+    body.className = nextDocument.body.className;
+    body.classList.remove('has-env', 'mobile-menu-open');
+    body.classList.add('opened');
+    body.removeAttribute('aria-busy');
+
+    var destination = normalizeRoute(target.pathname) + target.search + target.hash;
+    if (!replaceHistory) window.history.pushState({ softRoute: true }, '', destination);
+    navigationStateSaved = false;
+    setupMobileNav();
+    setupHeroVideo();
+    setupCountdown();
+    reveal();
+
+    if (target.hash) {
+      window.requestAnimationFrame(function () {
+        var section = document.getElementById(decodeURIComponent(target.hash.slice(1)));
+        if (section) section.scrollIntoView();
+      });
+    } else window.scrollTo(0, 0);
+  }
+  function softNavigate(url, replaceHistory) {
+    if (softNavigationPending) return;
+    softNavigationPending = true;
+    body.setAttribute('aria-busy', 'true');
+    var target = new URL(url, window.location.href);
+    fetch(normalizeRoute(target.pathname) + target.search)
+      .then(function (response) {
+        if (!response.ok) throw new Error('Route request failed');
+        return response.text();
+      })
+      .then(function (html) {
+        var nextDocument = new DOMParser().parseFromString(html, 'text/html');
+        finishSoftNavigation(target, nextDocument, replaceHistory);
+      })
+      .catch(function () {
+        window.location.href = target.href;
+      })
+      .finally(function () {
+        softNavigationPending = false;
+        body.removeAttribute('aria-busy');
+      });
+  }
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var link = e.target.closest && e.target.closest('a[href]');
+    if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+    var target = new URL(link.href, window.location.href);
+    if (target.origin !== window.location.origin || !isSoftRoute(target.pathname)) return;
+    var currentPath = normalizeRoute(window.location.pathname);
+    var targetPath = normalizeRoute(target.pathname);
+    if (currentPath === targetPath) {
+      if (target.hash) return;
+      e.preventDefault();
+      navigationStateSaved = false;
+      return;
+    }
+    e.preventDefault();
+    softNavigate(target.href, false);
+  });
+  window.addEventListener('popstate', function () {
+    if (isSoftRoute(window.location.pathname)) softNavigate(window.location.href, true);
+  });
 })();

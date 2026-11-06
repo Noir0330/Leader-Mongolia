@@ -24,4 +24,4 @@ Repo-г Vercel-д import хийгээд Framework Preset-ийг `Other` байл
 
 ## Content update
 
-Урилгын текст, зочны нэрийн мөр болон тасалбарын үнийг `index.html` дотроос шинэчилнэ. Эх demo-ийн 2027 оны 6 сарын 12-ны огноо, хөтөлбөр, Restorant Ambient / Ferizaj байршлын section-үүдийг хадгалсан; бодит мэдээлэл өөр бол эдгээр утгыг солино.
+Урилгын текст, 2026 оны 12 сарын 26-ны countdown, Galaxy Event Hall байршил болон хөтөлбөрийг `index.html` дотроос шинэчилнэ. Тасалбарын мэдээлэл `tickets/index.html` дотор байрлана.

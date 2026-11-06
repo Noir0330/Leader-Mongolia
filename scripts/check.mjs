@@ -3,9 +3,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const htmlPaths = ["index.html", "artists/index.html"];
+const htmlPaths = ["index.html", "artists/index.html", "tickets/index.html"];
 const htmlPages = await Promise.all(htmlPaths.map((htmlPath) => readFile(path.join(root, htmlPath), "utf8")));
 const html = htmlPages[0];
+const ticketsHtml = htmlPages[2];
 const fontCssPath = path.join(root, "assets/css/fonts.css");
 const fontCss = await readFile(fontCssPath, "utf8");
 const localReferences = htmlPages.flatMap((page) => [...page.matchAll(/(?:content|href|src)="([^"]+)"/g)])
@@ -43,11 +44,15 @@ if (!fontCss.includes("U+0400-045F") || !fontCss.includes("U+0460-052F")) {
   failures.push("Mongolian Cyrillic font coverage is missing.");
 }
 
-for (const copy of ["Leader’s of Mongolia", "600,000₮", "500,000₮", "400,000₮", "Энэ жил таны он байг ээ…"]) {
+for (const copy of ["Leader’s of Mongolia", "Эрхэмсэг үдэш таныг урьж байна", "Шинэ оноо хамтдаа угтъя!"]) {
   if (!html.includes(copy)) failures.push(`Required invitation copy is missing: ${copy}`);
 }
 
-for (const eventCopy of ["2027-06-12", "Хөтөлбөр", "Restorant Ambient", "Ferizaj, Kosovë"]) {
+for (const ticketCopy of ["VVIP", "VIP", "Regular", "600,000₮", "500,000₮", "400,000₮", "12 · 26"]) {
+  if (!ticketsHtml.includes(ticketCopy)) failures.push(`Required ticket copy is missing: ${ticketCopy}`);
+}
+
+for (const eventCopy of ["2026-12-26T00:00:00+08:00", "2026 оны 12 сарын 26", "Хөтөлбөр", "Galaxy Event Hall"]) {
   if (!html.includes(eventCopy)) failures.push(`Preserved event content is missing: ${eventCopy}`);
 }
 
