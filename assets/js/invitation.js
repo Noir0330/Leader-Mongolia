@@ -205,12 +205,12 @@
     var signal = mobileNavController.signal;
     var mobileNav = document.querySelector('.mobile-nav');
     if (!mobileNav) return;
-    var navLinks = [].slice.call(mobileNav.querySelectorAll('a[href^="#"]'));
+    var navLinks = [].slice.call(document.querySelectorAll('.mobile-nav a[href^="#"],.desktop-nav a[href^="#"]'));
     var menuToggle = mobileNav.querySelector('.mobile-menu-toggle');
     var menuPanel = mobileNav.querySelector('.mobile-menu-panel');
     var menuBackdrop = mobileNav.querySelector('.mobile-menu-backdrop');
     var menuClose = mobileNav.querySelector('.mobile-menu-close');
-    var sectionIds = ['top', 'artists', 'program', 'location'];
+    var sectionIds = ['top', 's1', 'artists', 'program', 'location'];
     var setMenu = function (open, restoreFocus) {
       mobileNav.classList.toggle('is-open', open);
       document.body.classList.toggle('mobile-menu-open', open);
@@ -251,7 +251,7 @@
         if (link.getAttribute('href') === '#' + currentId) link.setAttribute('aria-current', 'page');
         else link.removeAttribute('aria-current');
       });
-      menuToggle.classList.toggle('is-contextual', ['program', 'location'].indexOf(currentId) !== -1);
+      menuToggle.classList.toggle('is-contextual', ['s1', 'program', 'location'].indexOf(currentId) !== -1);
     };
     var navTicking = false;
     window.addEventListener('scroll', function () {
@@ -261,11 +261,80 @@
     }, { passive: true, signal: signal });
     window.addEventListener('resize', function () {
       updateNav();
-      if (window.innerWidth > 720 && mobileNav.classList.contains('is-open')) setMenu(false);
+      if (window.innerWidth > 900 && mobileNav.classList.contains('is-open')) setMenu(false);
     }, { signal: signal });
     updateNav();
   }
   setupMobileNav();
+
+  // Card-ийн data-video-src утга нэмэгдэхэд мэндчилгээний тоглуулагч автоматаар идэвхжинэ.
+  var greetingVideoController;
+  var activeGreetingDialog;
+  function setupGreetingVideos() {
+    if (activeGreetingDialog && activeGreetingDialog.open) activeGreetingDialog.close();
+    activeGreetingDialog = null;
+    if (greetingVideoController) greetingVideoController.abort();
+    greetingVideoController = new AbortController();
+    var signal = greetingVideoController.signal;
+    var dialog = document.querySelector('[data-greeting-dialog]');
+    var cards = [].slice.call(document.querySelectorAll('[data-greeting-card]'));
+    if (!dialog || !cards.length) return;
+    var video = dialog.querySelector('[data-greeting-video]');
+    var title = dialog.querySelector('[data-greeting-title]');
+    var closeButton = dialog.querySelector('[data-greeting-close]');
+    var resumeMusic = false;
+
+    var closeDialog = function () {
+      if (dialog.open && typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+    };
+    var cleanUp = function () {
+      video.pause();
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+      video.load();
+      body.classList.remove('greeting-video-open');
+      activeGreetingDialog = null;
+      if (resumeMusic) playMusic();
+      resumeMusic = false;
+    };
+
+    cards.forEach(function (card) {
+      var src = card.getAttribute('data-video-src') || '';
+      var status = card.querySelector('.greeting-card-copy em');
+      if (!src) {
+        card.disabled = true;
+        card.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      card.disabled = false;
+      card.removeAttribute('aria-disabled');
+      if (status) status.textContent = 'Видео үзэх';
+      card.setAttribute('aria-label', (card.getAttribute('data-video-title') || 'Видео мэндчилгээ') + ' үзэх');
+      card.addEventListener('click', function () {
+        var poster = card.getAttribute('data-video-poster') || '';
+        title.textContent = card.getAttribute('data-video-title') || 'Видео мэндчилгээ';
+        video.src = src;
+        if (poster) video.poster = poster;
+        else video.removeAttribute('poster');
+        resumeMusic = Boolean(audio && !audio.paused && musicShouldPlay);
+        if (resumeMusic) {
+          audio.pause();
+          mbtn && mbtn.classList.remove('on');
+        }
+        activeGreetingDialog = dialog;
+        body.classList.add('greeting-video-open');
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', '');
+        video.play().catch(function () {});
+      }, { signal: signal });
+    });
+    closeButton.addEventListener('click', closeDialog, { signal: signal });
+    dialog.addEventListener('click', function (event) { if (event.target === dialog) closeDialog(); }, { signal: signal });
+    dialog.addEventListener('close', cleanUp, { signal: signal });
+    dialog.addEventListener('cancel', function () { window.setTimeout(cleanUp, 0); }, { signal: signal });
+  }
+  setupGreetingVideos();
 
   // Animacionet kur seksionet hyjnë në ekran
   var reveal = function () {
@@ -387,12 +456,15 @@
   function finishSoftNavigation(target, nextDocument, replaceHistory) {
     var currentMain = document.querySelector('main');
     var currentNav = document.querySelector('.mobile-nav');
+    var currentDesktopNav = document.querySelector('.desktop-nav');
     var nextMain = nextDocument.querySelector('main');
     var nextNav = nextDocument.querySelector('.mobile-nav');
-    if (!currentMain || !currentNav || !nextMain || !nextNav) throw new Error('Incomplete route document');
+    var nextDesktopNav = nextDocument.querySelector('.desktop-nav');
+    if (!currentMain || !currentNav || !currentDesktopNav || !nextMain || !nextNav || !nextDesktopNav) throw new Error('Incomplete route document');
 
     currentMain.replaceWith(nextMain);
     currentNav.replaceWith(nextNav);
+    currentDesktopNav.replaceWith(nextDesktopNav);
     document.title = nextDocument.title;
     updateDescription(nextDocument);
     body.className = nextDocument.body.className;
@@ -405,6 +477,7 @@
     navigationStateSaved = false;
     setupMobileNav();
     setupHeroVideo();
+    setupGreetingVideos();
     setupMusicContext(nextDocument.querySelector('#bgm'));
     setupCountdown();
     reveal();

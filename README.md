@@ -25,3 +25,7 @@ Repo-г Vercel-д import хийгээд Framework Preset-ийг `Other` байл
 ## Content update
 
 Урилгын текст, 2026 оны 12 сарын 26-ны countdown, Galaxy Event Hall байршил болон хөтөлбөрийг `index.html` дотроос шинэчилнэ. Тасалбарын мэдээлэл `tickets/index.html`, үдшийн зоогийн цэс `menu/index.html` дотор байрлана.
+
+### Видео мэндчилгээ нэмэх
+
+Видео файлаа `assets/video/greetings/` дотор байрлуулаад `index.html`-ийн тохирох `.greeting-card` дээрх `data-video-src` утгад замыг нь оруулна. Нүүр зураг ашиглах бол `data-video-poster`, гарчгийг `data-video-title` дээр шинэчилнэ. `data-video-src` хоосон үед card “Тун удахгүй” төлөвтэй байна; зам оруулмагц video modal автоматаар идэвхжинэ.
