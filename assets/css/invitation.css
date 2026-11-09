@@ -6,6 +6,7 @@ body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opa
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .4 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 .is-dark body::before,body.is-dark::before{mix-blend-mode:screen;opacity:.25}
 body.has-env:not(.opened){overflow:hidden;height:100svh}
+body.has-env:not(.opened) :is(main,.global-fx,.festive-backdrop) *,body.has-env:not(.opened) :is(main,.global-fx,.festive-backdrop) *::before,body.has-env:not(.opened) :is(main,.global-fx,.festive-backdrop) *::after{animation-play-state:paused!important}
 a{color:inherit}
 h1,h2,h3{font-weight:400;margin:0}
 .inv{position:relative;z-index:1}
@@ -126,14 +127,14 @@ h1,h2,h3{font-weight:400;margin:0}
 .global-fx>.snowflakes .snowflake__inner::before{filter:drop-shadow(0 0 3px rgba(255,255,255,.85));animation:falling-snow-glint 2.8s ease-in-out infinite}
 .global-fx>.snowflakes .snowflake:nth-child(3n) .snowflake__inner::before{animation-delay:-.9s}
 .global-fx>.snowflakes .snowflake:nth-child(3n+1) .snowflake__inner::before{animation-delay:-1.8s}
-@keyframes falling-snow-glint{0%,100%{filter:drop-shadow(0 0 2px rgba(255,255,255,.5)) brightness(.9)}50%{filter:drop-shadow(0 0 8px rgba(255,246,196,1)) brightness(1.65)}}
+@keyframes falling-snow-glint{0%,100%{opacity:.72;transform:scale(.94)}50%{opacity:1;transform:scale(1.04)}}
 .fx-confetti i{border-radius:2px;height:calc(var(--s) * .5)}
 .fx-confetti i:nth-child(5n){background:#ff5d8f}.fx-confetti i:nth-child(5n+1){background:#ffb84c}.fx-confetti i:nth-child(5n+2){background:#4cc9f0}.fx-confetti i:nth-child(5n+3){background:#7b61ff}.fx-confetti i:nth-child(5n+4){background:#2ec4b6}
 
 /* Том цасан ширхэгүүдийн ирмэгээр жижиг оч ээлжилж гялтганана. */
 .festive-backdrop{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none}
 .festive-backdrop i{position:absolute;color:var(--accent);font-style:normal;line-height:1;opacity:.11;transform-style:preserve-3d;animation:snowflake-shimmer 5.6s ease-in-out infinite}
-.festive-backdrop i::before{content:"❄";display:block;text-shadow:0 0 5px transparent;animation:snowflake-glow 2.8s ease-in-out infinite}
+.festive-backdrop i::before{content:"❄";display:block;text-shadow:0 0 8px color-mix(in srgb,var(--accent) 55%,transparent);animation:snowflake-glow 2.8s ease-in-out infinite}
 .festive-backdrop i::after{content:"✦";position:absolute;top:-.08em;right:-.08em;color:#fff4b8;font-size:.24em;opacity:0;text-shadow:0 0 9px #fff,0 0 18px var(--accent);animation:snowflake-glint 2.8s ease-in-out infinite}
 .festive-backdrop i:nth-child(1){top:10%;left:-28px;font-size:112px}
 .festive-backdrop i:nth-child(2){top:29%;right:-37px;font-size:138px;animation-delay:-2.4s}
@@ -146,7 +147,7 @@ h1,h2,h3{font-weight:400;margin:0}
 .festive-backdrop i:nth-child(2n)::before,.festive-backdrop i:nth-child(2n)::after{animation-delay:-1.4s}
 .festive-backdrop i:nth-child(3n)::before,.festive-backdrop i:nth-child(3n)::after{animation-delay:-2.1s}
 @keyframes snowflake-shimmer{0%,100%{opacity:.07;transform:rotateZ(-4deg) rotateY(-10deg) scale(.94)}50%{opacity:.2;transform:rotateZ(4deg) rotateY(10deg) scale(1.04)}}
-@keyframes snowflake-glow{0%,100%{filter:brightness(.78);text-shadow:0 0 3px transparent}50%{filter:brightness(1.65);text-shadow:0 0 10px color-mix(in srgb,var(--accent) 85%,#fff)}}
+@keyframes snowflake-glow{0%,100%{opacity:.68;transform:scale(.96)}50%{opacity:1;transform:scale(1.03)}}
 @keyframes snowflake-glint{0%,32%,100%{opacity:0;transform:scale(.25) rotate(0)}45%{opacity:1;transform:scale(1.15) rotate(90deg)}58%{opacity:0;transform:scale(.4) rotate(180deg)}}
 
 @media (max-width:520px){
@@ -338,7 +339,7 @@ body.greeting-video-open{overflow:hidden}
 
 /* ---------- Шинэ жилийн урилгын дугтуй ---------- */
 .envelope{position:fixed;inset:0;z-index:50;isolation:isolate;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;
-  background:#160a06 url("/assets/images/new-year-envelope-bg.png") center/cover no-repeat;transition:opacity .9s 1.5s,visibility 0s 2.4s}
+  background:#160a06 url("/assets/images/new-year-envelope-bg.jpg") center/cover no-repeat;transition:opacity .9s 1.5s,visibility 0s 2.4s}
 .envelope::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(18,7,3,.05) 0%,rgba(9,9,16,.08) 40%,rgba(5,9,18,.34) 100%),radial-gradient(circle at 50% 42%,transparent 36%,rgba(7,12,23,.14) 100%)}
 .envelope::after{content:"";position:absolute;inset:clamp(10px,2.2vw,24px);z-index:2;border:1px solid rgba(236,203,132,.38);border-radius:3px;box-shadow:inset 0 0 0 5px rgba(212,176,102,.035),0 0 55px rgba(255,185,70,.08);pointer-events:none}
 .envelope:focus-visible{outline:3px solid #f7d994;outline-offset:-7px}
@@ -410,7 +411,7 @@ body.greeting-video-open{overflow:hidden}
 .opened .envelope{opacity:0;visibility:hidden}
 
 @media (max-width:520px){
-  .env-stage{justify-content:flex-start;padding-top:max(54px,7svh);gap:clamp(11px,2.1vh,20px)}
+  .env-stage{justify-content:center;padding-top:max(54px,7svh);gap:clamp(11px,2.1vh,20px)}
   .env-kicker{max-width:88vw;gap:9px;letter-spacing:.2em}
   .env{width:min(86vw,390px)}
   .env-text{margin-top:2px}
@@ -675,6 +676,7 @@ body:has(.thanks-bar) .music-btn{bottom:92px}
 .history-route h1{width:100%;max-width:none;font-size:clamp(2rem,4vw,3.4rem);line-height:1.05;overflow-wrap:anywhere}
 .history-route h1 span{color:var(--accent)}
 @media (max-width:900px){
+  body{background-attachment:scroll}
   .history-route .artists-route-hero{padding:78px 20px 28px}
   .history-route h1{font-size:clamp(1.9rem,7vw,2.8rem)}
 }
@@ -964,7 +966,7 @@ html[lang="mn"] .foot-names .n1{font-family:var(--f-display);font-size:.76em;let
   body.mobile-menu-open{overflow:hidden}
   .desktop-nav{display:none}
   .mobile-nav{position:fixed;left:50%;right:auto;bottom:calc(10px + env(safe-area-inset-bottom));z-index:35;display:block;width:min(520px,calc(100vw - 24px));margin:0;transform:translateX(-50%);transition:opacity .35s,transform .35s}
-  .mobile-nav-main{position:relative;z-index:3;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:12px 6px 7px;border:1px solid color-mix(in srgb,var(--accent) 72%,transparent);border-radius:22px;background:linear-gradient(155deg,color-mix(in srgb,var(--paper) 95%,#fff 5%),color-mix(in srgb,var(--bg) 96%,#000));box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 0 0 5px color-mix(in srgb,var(--accent) 7%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .mobile-nav-main{position:relative;z-index:3;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:12px 6px 7px;border:1px solid color-mix(in srgb,var(--accent) 72%,transparent);border-radius:22px;background:linear-gradient(155deg,color-mix(in srgb,var(--paper) 98%,#fff 2%),color-mix(in srgb,var(--bg) 98%,#000));box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 0 0 5px color-mix(in srgb,var(--accent) 7%,transparent)}
   .mobile-nav-main::before{content:"✦  ❄  ✦  ❄  ✦  ❄  ✦";position:absolute;left:18px;right:18px;top:-10px;height:18px;overflow:hidden;color:var(--accent);background:var(--paper);font:400 11px/18px var(--f-display);letter-spacing:clamp(5px,3.8vw,14px);text-align:center;white-space:nowrap;text-shadow:0 0 8px color-mix(in srgb,var(--accent) 60%,transparent)}
   .mobile-nav-main::after{content:"";position:absolute;inset:5px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:17px;pointer-events:none}
   .mobile-nav-main>a,.mobile-menu-toggle{position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 1px 5px;border:0;border-radius:14px;background:transparent;color:var(--muted);font:500 clamp(.5rem,2.15vw,.65rem)/1.05 var(--f-body);text-align:center;text-decoration:none;transition:color .2s,background .2s,transform .2s;cursor:pointer}

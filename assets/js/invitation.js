@@ -88,7 +88,21 @@
     if (reducedMotion) {
       heroVideo.removeAttribute('autoplay');
       heroVideo.pause();
-    } else heroVideo.play().catch(function () {});
+      return;
+    }
+    if (body.classList.contains('has-env') && !body.classList.contains('opened')) {
+      heroVideo.pause();
+      return;
+    }
+    var deferredSources = heroVideo.querySelectorAll('source[data-src]');
+    if (deferredSources.length) {
+      deferredSources.forEach(function (source) {
+        source.setAttribute('src', source.getAttribute('data-src'));
+        source.removeAttribute('data-src');
+      });
+      heroVideo.load();
+    }
+    heroVideo.play().catch(function () {});
   }
   setupHeroVideo();
 
@@ -355,12 +369,12 @@
     var open = function () {
       if (opened) return; opened = true;
       writeSession(invitationOpenedKey, '1');
-      body.classList.add('opened'); playMusic(0);
+      body.classList.add('opened'); setupHeroVideo(); playMusic(0);
       setTimeout(reveal, 1500);
       setTimeout(function () { env.remove(); }, 2500);
     };
     if (readSession(invitationOpenedKey) === '1') {
-      env.remove(); body.classList.add('opened'); reveal();
+      env.remove(); body.classList.add('opened'); setupHeroVideo(); reveal();
     } else {
       env.addEventListener('click', open);
       env.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });

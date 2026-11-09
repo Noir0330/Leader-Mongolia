@@ -11,7 +11,7 @@ const ticketsHtml = htmlPages[3];
 const historyHtml = htmlPages[4];
 const fontCssPath = path.join(root, "assets/css/fonts.css");
 const fontCss = await readFile(fontCssPath, "utf8");
-const localReferences = htmlPages.flatMap((page) => [...page.matchAll(/(?:content|href|src)="([^"]+)"/g)])
+const localReferences = htmlPages.flatMap((page) => [...page.matchAll(/(?:content|data-src|href|src)="([^"]+)"/g)])
   .map((match) => match[1])
   .filter((reference) => reference.startsWith("/"));
 
