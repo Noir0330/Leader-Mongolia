@@ -12,6 +12,7 @@ const mimeTypes = new Map([
   [".jpeg", "image/jpeg"],
   [".jpg", "image/jpeg"],
   [".js", "text/javascript; charset=utf-8"],
+  [".m4a", "audio/mp4"],
   [".mp3", "audio/mpeg"],
   [".mp4", "video/mp4"],
   [".png", "image/png"],

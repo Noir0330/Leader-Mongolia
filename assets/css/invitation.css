@@ -80,6 +80,16 @@ h1,h2,h3{font-weight:400;margin:0}
 .event-poster-art{position:relative;overflow:hidden;background:#090909;border:1px solid color-mix(in srgb,var(--accent) 50%,transparent)}
 .event-poster-art::after{content:"";position:absolute;inset:5px;pointer-events:none;border:1px solid rgba(255,235,174,.28);box-shadow:inset 0 0 34px rgba(0,0,0,.24)}
 .event-poster-art img{display:block;width:100%;height:auto}
+.event-film-frame{position:relative;width:min(100%,960px);margin:clamp(50px,8vw,86px) auto 0;padding:7px;border:1px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(120deg,#6e4315,#f5d784 32%,#8a571c 67%,#fff0ab) border-box;box-shadow:0 38px 94px -42px rgba(0,0,0,.98),0 0 56px color-mix(in srgb,var(--accent) 9%,transparent)}
+.event-film-frame::before,.event-film-frame::after{content:"";position:absolute;z-index:2;width:40px;height:40px;pointer-events:none;transition:filter .5s ease}
+.event-film-frame::before{top:-9px;left:-9px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)}
+.event-film-frame::after{right:-9px;bottom:37px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent)}
+.event-film-frame.is-active::before,.event-film-frame.is-active::after{filter:drop-shadow(0 0 9px color-mix(in srgb,var(--accent) 72%,transparent))}
+.event-film-media{position:relative;aspect-ratio:32/15;overflow:hidden;background:#05070c;border:1px solid color-mix(in srgb,var(--accent) 50%,transparent)}
+.event-film-media::after{content:"";position:absolute;inset:5px;pointer-events:none;border:1px solid rgba(255,235,174,.2);box-shadow:inset 0 0 42px rgba(0,0,0,.32)}
+.event-film-video{display:block;width:100%;height:100%;object-fit:cover}
+.event-film-frame figcaption{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 8px 5px;color:var(--accent);font-size:.58rem;font-weight:600;letter-spacing:.19em;text-transform:uppercase}
+.event-film-frame figcaption small{color:var(--muted);font:inherit;letter-spacing:.14em}
 
 @media (max-width:520px){
   .event-poster{padding-inline:18px;padding-bottom:86px}
@@ -88,6 +98,12 @@ h1,h2,h3{font-weight:400;margin:0}
   .event-poster-frame::before{top:-7px;left:-7px}
   .event-poster-frame::after{right:-7px;bottom:-7px}
   .event-poster-art::after{inset:3px}
+  .event-film-frame{margin-top:48px;padding:4px}
+  .event-film-frame::before,.event-film-frame::after{width:28px;height:28px}
+  .event-film-frame::before{top:-6px;left:-6px}
+  .event-film-frame::after{right:-6px;bottom:35px}
+  .event-film-media::after{inset:3px}
+  .event-film-frame figcaption{padding:10px 4px 4px;font-size:.5rem;letter-spacing:.12em}
 }
 
 /* Artet e hero-s */
@@ -653,7 +669,7 @@ body:has(.thanks-bar) .music-btn{bottom:92px}
 .mc-s{display:none}
 @media (prefers-reduced-motion:reduce){.mc-btn::after{animation:none;display:none}}
 
-/* Leaders Mongolia brand + Cyrillic typography */
+/* Leaders of Mongolia brand + Cyrillic typography */
 .brand-mark{position:relative;width:min(76vw,320px);height:136px;margin:0 auto 12px;overflow:hidden;pointer-events:none;background:transparent url("../images/leaders-of-mongolia-2026-transparent.png") center/contain no-repeat}
 .brand-mark::after{content:none}
 .brand-mark img{opacity:0;width:100%;height:auto}

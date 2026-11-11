@@ -48,7 +48,7 @@ if (!fontCss.includes("U+0400-045F") || !fontCss.includes("U+0460-052F")) {
   failures.push("Mongolian Cyrillic font coverage is missing.");
 }
 
-for (const copy of ["Leaders Mongolia", "Эрхэмсэг үдэш таныг урьж байна", "Шинэ оноо хамтдаа угтъя!"]) {
+for (const copy of ["Leaders of Mongolia", "Эрхэмсэг үдэш таныг урьж байна", "Шинэ оноо хамтдаа угтъя!"]) {
   if (!html.includes(copy)) failures.push(`Required invitation copy is missing: ${copy}`);
 }
 
@@ -60,7 +60,7 @@ for (const menuCopy of ["Таны үдшийн зоог", "Жимстэй шин
   if (!menuHtml.includes(menuCopy)) failures.push(`Required menu copy is missing: ${menuCopy}`);
 }
 
-if (!historyHtml.includes("Leaders Mongolia 2025 History")) {
+if (!historyHtml.includes("Leaders of Mongolia 2025 History")) {
   failures.push("The 2025 history route title is missing.");
 }
 
@@ -71,6 +71,10 @@ for (const [index, page] of htmlPages.entries()) {
 
 for (const eventCopy of ["2026-12-26T00:00:00+08:00", "2026 оны 12 сарын 26", "Хөтөлбөр", "Galaxy Event Hall"]) {
   if (!html.includes(eventCopy)) failures.push(`Preserved event content is missing: ${eventCopy}`);
+}
+
+for (const filmAsset of ["/assets/video/leaders-mongolia-2026.mp4", "/assets/audio/leaders-mongolia-2026.m4a", "/assets/images/leaders-mongolia-2026-video-poster.jpg"]) {
+  if (!html.includes(filmAsset)) failures.push(`Leaders of Mongolia 2026 film asset is missing: ${filmAsset}`);
 }
 
 for (const removedDemoCopy of ["+383"]) {

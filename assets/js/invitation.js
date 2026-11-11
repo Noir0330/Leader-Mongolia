@@ -211,6 +211,81 @@
   }
   setupMusicContext(audio);
 
+  // Постерын доорх film дэлгэцэнд ороход үндсэн хөгжмийг film-ийн дуутай солино.
+  var eventFilmObserver;
+  var eventFilmController;
+  var eventFilmVideo;
+  function setupEventFilm() {
+    if (eventFilmObserver) eventFilmObserver.disconnect();
+    if (eventFilmController) eventFilmController.abort();
+    if (eventFilmVideo) eventFilmVideo.pause();
+    eventFilmObserver = null;
+    eventFilmVideo = null;
+
+    var film = document.querySelector('[data-event-film]');
+    if (!film) return;
+    var video = film.querySelector('.event-film-video');
+    var filmAudioSrc = film.getAttribute('data-audio-src');
+    var filmVideoSelector = film.getAttribute('data-sync-video');
+    if (!video || !filmAudioSrc || !filmVideoSelector) return;
+
+    eventFilmController = new AbortController();
+    var signal = eventFilmController.signal;
+    var routeAudioSrc = currentMusicSrc();
+    var routeVideoSelector = audio && audio.getAttribute('data-sync-video');
+    var filmIsActive = false;
+    var switchTimer;
+    eventFilmVideo = video;
+
+    signal.addEventListener('abort', function () { window.clearTimeout(switchTimer); }, { once: true });
+
+    var ensureAudioPlayback = function (expectedSrc, startTime) {
+      window.setTimeout(function () {
+        if (!audio || !musicShouldPlay || currentMusicSrc() !== normalizeMusicSrc(expectedSrc) || !audio.paused) return;
+        playMusic(startTime);
+      }, 250);
+    };
+
+    var setFilmActive = function (active) {
+      if (active === filmIsActive) return;
+      filmIsActive = active;
+      film.classList.toggle('is-active', active);
+
+      if (active) {
+        if (audio) audio.setAttribute('data-sync-video', filmVideoSelector);
+        setMusicSource(filmAudioSrc);
+        if (!reducedMotion) video.play().catch(function () {});
+        ensureAudioPlayback(filmAudioSrc, video.currentTime);
+        return;
+      }
+
+      video.pause();
+      if (audio) {
+        if (routeVideoSelector) audio.setAttribute('data-sync-video', routeVideoSelector);
+        else audio.removeAttribute('data-sync-video');
+      }
+      setMusicSource(routeAudioSrc);
+      ensureAudioPlayback(routeAudioSrc, lastKnownMusicTime);
+    };
+
+    if (audio) audio.addEventListener('timeupdate', function () {
+      if (!filmIsActive || currentMusicSrc() !== normalizeMusicSrc(filmAudioSrc) || video.readyState < 1) return;
+      if (Math.abs(video.currentTime - audio.currentTime) > 0.45) video.currentTime = audio.currentTime;
+    }, { signal: signal });
+
+    if (!('IntersectionObserver' in window)) return;
+    eventFilmObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        window.clearTimeout(switchTimer);
+        switchTimer = window.setTimeout(function () {
+          setFilmActive(entry.isIntersecting && entry.intersectionRatio >= 0.5);
+        }, 160);
+      });
+    }, { threshold: [0, 0.5, 1], rootMargin: '-8% 0px -8% 0px' });
+    eventFilmObserver.observe(film);
+  }
+  setupEventFilm();
+
   // Mobile navigation: үндсэн холбоосууд + бусад хэсгийн burger drawer.
   var mobileNavController;
   function setupMobileNav() {
@@ -493,6 +568,7 @@
     setupHeroVideo();
     setupGreetingVideos();
     setupMusicContext(nextDocument.querySelector('#bgm'));
+    setupEventFilm();
     setupCountdown();
     reveal();
 
