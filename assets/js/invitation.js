@@ -6,6 +6,7 @@
   var mbtn = document.getElementById('musicBtn');
   var musicStateKey = 'leaders-music-state-v2';
   var invitationOpenedKey = 'leaders-invitation-opened-v1';
+  var mobileMenuNoticedKey = 'leaders-mobile-menu-noticed-v1';
   var musicShouldPlay = false;
   var lastKnownMusicTime = 0;
   var navigationStateSaved = false;
@@ -299,8 +300,30 @@
     var menuPanel = mobileNav.querySelector('.mobile-menu-panel');
     var menuBackdrop = mobileNav.querySelector('.mobile-menu-backdrop');
     var menuClose = mobileNav.querySelector('.mobile-menu-close');
+    if (!menuToggle || !menuPanel || !menuBackdrop || !menuClose) return;
+    menuToggle.setAttribute('aria-label', 'Дэлгэрэнгүй цэс: шагнал, сугалаа, хөтөлбөр');
+
+    var menuHead = menuPanel.querySelector('.mobile-menu-head');
+    if (menuHead && !menuHead.querySelector('.mobile-menu-lead')) {
+      var menuLead = document.createElement('p');
+      menuLead.className = 'mobile-menu-lead';
+      menuLead.textContent = 'Шагнал, сугалаа болон үдшийн бүх мэдээлэл';
+      menuHead.appendChild(menuLead);
+    }
+    [].slice.call(menuPanel.querySelectorAll('.mobile-menu-links a')).forEach(function (link) {
+      var path = normalizeRoute(new URL(link.href, window.location.href).pathname);
+      if (path === '/awards/' || path === '/lottery/') link.classList.add('is-featured');
+    });
+
+    var menuNudgeTimer;
+    var dismissMenuNudge = function () {
+      window.clearTimeout(menuNudgeTimer);
+      mobileNav.classList.remove('has-menu-nudge');
+      writeSession(mobileMenuNoticedKey, '1');
+    };
     var sectionIds = ['top', 's1', 'artists', 'program', 'location'];
     var setMenu = function (open, restoreFocus) {
+      dismissMenuNudge();
       mobileNav.classList.toggle('is-open', open);
       document.body.classList.toggle('mobile-menu-open', open);
       menuToggle.setAttribute('aria-expanded', String(open));
@@ -353,6 +376,12 @@
       if (window.innerWidth > 900 && mobileNav.classList.contains('is-open')) setMenu(false);
     }, { signal: signal });
     updateNav();
+
+    if (!reducedMotion && !readSession(mobileMenuNoticedKey) && window.innerWidth <= 900) {
+      menuNudgeTimer = window.setTimeout(function () {
+        if (!mobileNav.classList.contains('is-open')) mobileNav.classList.add('has-menu-nudge');
+      }, 1800);
+    }
   }
   setupMobileNav();
 

@@ -3,12 +3,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const htmlPaths = ["index.html", "artists/index.html", "menu/index.html", "tickets/index.html", "history-2025/index.html"];
+const htmlPaths = ["index.html", "artists/index.html", "menu/index.html", "tickets/index.html", "history-2025/index.html", "lottery/index.html", "awards/index.html"];
 const htmlPages = await Promise.all(htmlPaths.map((htmlPath) => readFile(path.join(root, htmlPath), "utf8")));
 const html = htmlPages[0];
 const menuHtml = htmlPages[2];
 const ticketsHtml = htmlPages[3];
 const historyHtml = htmlPages[4];
+const lotteryHtml = htmlPages[5];
+const awardsHtml = htmlPages[6];
 const fontCssPath = path.join(root, "assets/css/fonts.css");
 const fontCss = await readFile(fontCssPath, "utf8");
 const localReferences = htmlPages.flatMap((page) => [...page.matchAll(/(?:content|data-src|href|src)="([^"]+)"/g)])
@@ -60,6 +62,14 @@ for (const menuCopy of ["Таны үдшийн зоог", "Жимстэй шин
   if (!menuHtml.includes(menuCopy)) failures.push(`Required menu copy is missing: ${menuCopy}`);
 }
 
+for (const lotteryCopy of ["Хусхан эх, хүүхдийн амралтад гэр бүлээрээ амрах эрх", "Saygon шар айраг 5 авдар", "Ару Дана Бээжин явах Universal Studio үзэх эрх", "2 хүн", "1 хүн"]) {
+  if (!lotteryHtml.includes(lotteryCopy)) failures.push(`Required lottery copy is missing: ${lotteryCopy}`);
+}
+
+for (const awardsCopy of ["Танай байгууллагаас салбартаа олон жил үр бүтээлтэй ажилласан ажилчнаа шагнуулах хүсэлтэй бол зохион байгуулагчдад хандан тодорхойлолтоо ирүүлэх боломжтой.", "Leaders of Mongolia <span>нэрэмжит шагнал", "3</strong><span>хүн", "“Leaders of Mongolia” өргөмжлөл", "Цом", "Ирэх жил оролцох эрх", "Ивээн тэтгэгчдийн гарын бэлэг", "Монголын оны шилдэг “Лидер залуу”-р өргөмжлөгдөнө", "Сайт, ТВ-р алдаршуулна", "Залуу удирдагч одон", "Тэргүүний залуу бизнесмен", "Тэргүүний залуу", "Салбарын тэргүүн шагнал"]) {
+  if (!awardsHtml.includes(awardsCopy)) failures.push(`Required awards copy is missing: ${awardsCopy}`);
+}
+
 if (!historyHtml.includes("Leaders of Mongolia 2025 History")) {
   failures.push("The 2025 history route title is missing.");
 }
@@ -67,6 +77,8 @@ if (!historyHtml.includes("Leaders of Mongolia 2025 History")) {
 for (const [index, page] of htmlPages.entries()) {
   if (page.includes("<small>01</small>")) failures.push(`${htmlPaths[index]} still numbers its navigation items.`);
   if (!page.includes('href="/history-2025/"')) failures.push(`${htmlPaths[index]} is missing the 2025 history navigation link.`);
+  if (!page.includes('href="/lottery/"')) failures.push(`${htmlPaths[index]} is missing the lottery navigation link.`);
+  if (!page.includes('href="/awards/"')) failures.push(`${htmlPaths[index]} is missing the awards navigation link.`);
 }
 
 for (const eventCopy of ["2026-12-26T00:00:00+08:00", "2026 оны 12 сарын 26", "Хөтөлбөр", "Galaxy Event Hall"]) {
