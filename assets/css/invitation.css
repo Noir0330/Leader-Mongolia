@@ -239,6 +239,7 @@ body.greeting-video-open{overflow:hidden}
 .event-date{display:flex;flex-direction:column;align-items:center;margin:4px auto 34px}
 .event-date span{font-size:.7rem;letter-spacing:.42em;color:var(--muted);transform:translateX(.21em)}
 .event-date strong{margin-top:5px;font-family:var(--f-display);font-size:clamp(2.2rem,9vw,3.25rem);font-weight:400;line-height:1.1;color:var(--ink)}
+.event-date .event-time{margin-top:8px;font-size:clamp(1.45rem,5.5vw,2rem);letter-spacing:.04em}
 .event-date small{display:flex;align-items:center;gap:12px;margin-top:12px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
 .event-date small::before,.event-date small::after{content:"";width:32px;height:1px;background:color-mix(in srgb,var(--accent) 55%,transparent)}
 .cd{display:flex;justify-content:center;align-items:stretch;gap:0;max-width:440px;margin:0 auto}

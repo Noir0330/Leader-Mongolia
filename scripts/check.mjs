@@ -81,7 +81,7 @@ for (const [index, page] of htmlPages.entries()) {
   if (!page.includes('href="/awards/"')) failures.push(`${htmlPaths[index]} is missing the awards navigation link.`);
 }
 
-for (const eventCopy of ["2026-12-26T00:00:00+08:00", "2026 оны 12 сарын 26", "Хөтөлбөр", "Galaxy Event Hall"]) {
+for (const eventCopy of ["2026-12-26T19:00:00+08:00", "2026 оны 12 сарын 26", "Хөтөлбөр", "Galaxy Event Hall", "19:00-02:00"]) {
   if (!html.includes(eventCopy)) failures.push(`Preserved event content is missing: ${eventCopy}`);
 }
 
